@@ -1,0 +1,23 @@
+---
+#- include: first.yml
+#- name: Start Sql Container
+#  become: true
+#  docker_container:
+#    name: thoughtworks-sql
+#    image: "{{ images[0].keys() | join('\n')}}:latest"
+#    env:
+#      MYSQL_ROOT_PASSWORD: '{{ SQL_PASSWORD }}'
+#    published_ports:
+#      - 3306:3306
+#
+- name: Check SQL scripts status
+  shell: |
+          docker cp '{{ role_path }}/files/test_script.sql' thoughtworks-sql:/tmp/test_script.sql
+          docker exec -t thoughtworks-sql bash -c 'mysql -u root -p{{ SQL_PASSWORD }} < /tmp/test_script.sql'
+  register: result
+
+- name: set 
+  shell: ls -lrt
+  when: '"wikidatabase" in result.stdout_lines and 
+  "GRANT ALL PRIVILEGES ON `wikidatabase`.* TO `wiki`@`localhost`"  in result.stdout_lines'
+  

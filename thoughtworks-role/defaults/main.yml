@@ -1,0 +1,9 @@
+---
+# defaults file for thoughtworks-role
+role_path: '{{ playbook_dir }}/thoughtworks-role'
+images:
+  - thoughtworks-sql: '{{ playbook_dir }}/images/sql'
+  - thoughtworks-web: '{{ playbook_dir }}/images/apache'
+code_version: mediawiki-1.35.0
+code_url: https://releases.wikimedia.org/mediawiki/1.35/mediawiki-1.35.0.tar.gz
+SQL_PASSWORD: root

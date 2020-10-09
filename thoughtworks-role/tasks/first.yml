@@ -1,0 +1,37 @@
+---
+
+- name: Install docker-py
+  become: true
+  pip:
+    name: docker
+
+- name: Create code Directory
+  file: 
+    path: '{{ playbook_dir }}/code'
+    state: directory
+    mode: '0755'
+
+- name: Build Docker image from Dockerfile
+  docker_image:
+    name: "{{ item.key }}"
+    path: "{{ item.value }}"
+    state: build
+  with_dict: "{{ images }}"
+
+- name: Get wikimedia code
+  get_url:
+    url: '{{ code_url }}'
+    dest: '{{ role_path }}/code/{{ code_version }}.tar.gz'
+
+- name: Unzip wikimedia
+  unarchive:
+    src: '{{ role_path }}/code/{{ code_version }}.tar.gz'
+    dest: '{{ role_path }}/code/'
+
+- name: Naming Conventions
+  command: mv '{{ role_path }}/code/{{ code_version }}' '{{ role_path }}/code/wikimedia'
+
+- name: Remove Zip archive
+  file:
+    path: '{{ role_path }}/code/{{ code_version }}.tar.gz'
+    state: absent
