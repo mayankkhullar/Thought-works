@@ -1,23 +1,43 @@
 ---
 #- include: first.yml
-#- name: Start Sql Container
-#  become: true
-#  docker_container:
-#    name: thoughtworks-sql
-#    image: "{{ images[0].keys() | join('\n')}}:latest"
-#    env:
-#      MYSQL_ROOT_PASSWORD: '{{ SQL_PASSWORD }}'
-#    published_ports:
-#      - 3306:3306
-#
-- name: Check SQL scripts status
+- name: Start Sql Container
+  become: true
+  no_log: true
+  docker_container:
+    name: thoughtworks-sql
+    image: "{{ images[0].keys() | join('\n')}}:latest"
+    env:
+      MYSQL_ROOT_PASSWORD: '{{ SQL_PASSWORD }}'
+    published_ports:
+      - 3306:3306
+
+- name: Pause for Sql container to come up
+  pause:
+    seconds: 20
+
+- name: Check SQL Container status
   shell: |
           docker cp '{{ role_path }}/files/test_script.sql' thoughtworks-sql:/tmp/test_script.sql
           docker exec -t thoughtworks-sql bash -c 'mysql -u root -p{{ SQL_PASSWORD }} < /tmp/test_script.sql'
   register: result
 
-- name: set 
-  shell: ls -lrt
+- name: Run Apache only if sql Container Styarted Fine
+  become: true
+  docker_container:
+    name: thoughtworks-web
+    image: "{{ images[1].keys() | join('\n')}}:latest"
+    published_ports:
+      - 9990:80
   when: '"wikidatabase" in result.stdout_lines and 
   "GRANT ALL PRIVILEGES ON `wikidatabase`.* TO `wiki`@`localhost`"  in result.stdout_lines'
-  
+ 
+- name: Enable Firewalld Service
+  become: true
+  firewalld:
+    service: '{{ item }}'
+    zone: public
+    permanent: true
+    state: enabled
+  with_items:
+    - http
+    - https

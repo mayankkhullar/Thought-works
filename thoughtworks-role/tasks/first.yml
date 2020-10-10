@@ -7,16 +7,9 @@
 
 - name: Create code Directory
   file: 
-    path: '{{ playbook_dir }}/code'
+    path: '{{ role_path }}/code'
     state: directory
     mode: '0755'
-
-- name: Build Docker image from Dockerfile
-  docker_image:
-    name: "{{ item.key }}"
-    path: "{{ item.value }}"
-    state: build
-  with_dict: "{{ images }}"
 
 - name: Get wikimedia code
   get_url:
@@ -29,9 +22,31 @@
     dest: '{{ role_path }}/code/'
 
 - name: Naming Conventions
-  command: mv '{{ role_path }}/code/{{ code_version }}' '{{ role_path }}/code/wikimedia'
+  synchronize:
+    src: '{{ role_path }}/code/{{ code_version }}'
+    dest: '{{ playbook_dir }}/images/apache/wikimedia'
 
-- name: Remove Zip archive
+- name: Remove Code
   file:
-    path: '{{ role_path }}/code/{{ code_version }}.tar.gz'
+    path: '{{ item }}'
     state: absent
+  with_items:
+    - '{{ role_path }}/code/{{ code_version }}.tar.gz'
+    - '{{ role_path }}/code/{{ code_version }}'
+
+- name: Build Docker image from Dockerfile
+  docker_image:
+    name: "{{ item.key }}"
+    path: "{{ item.value }}"
+    state: build
+  with_dict: "{{ images }}"
+
+- name: Remove Code
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - '{{ role_path }}/code/{{ code_version }}.tar.gz'
+    - '{{ role_path }}/code/{{ code_version }}'
+    - '{{ playbook_dir }}/images/apache/wikimedia'
+
