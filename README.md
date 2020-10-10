@@ -4,14 +4,15 @@ Automating Wikimedia Deployments and Migarting Legacy env to Containerized Appli
 
 Prequisites:
 
-pip
-ansible
-docker
-docker-py
+  pip
+  ansible
+  docker
+  docker-py
 
 
 ## Ansible-Role[thoughtworks-role] to Download Wiokimedia package and building customised Docker images and creating Containers from the images and at last adding firewall-rules for node.
 
+```
 ├── README.md
 ├── app.yml
 ├── images
@@ -41,7 +42,7 @@ docker-py
     │   └── test.yml
     └── vars
         └── main.yml
-
+```
         
    ## How to Run?
    
