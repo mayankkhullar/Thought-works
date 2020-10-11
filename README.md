@@ -62,6 +62,7 @@ Download Wikimedia package and building customised Docker images and creating Co
    
    # Snapshots
    ![1587625802063](images2/1.png)
+   ![1587625802063](images2/0.png)
    ![1587625802063](images2/2.png)
    ![1587625802063](images2/3.png)
    ![1587625802063](images2/4.png)
