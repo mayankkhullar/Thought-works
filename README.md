@@ -60,7 +60,8 @@ Download Wikimedia package and building customised Docker images and creating Co
    2. Main.yml - Will run the containers setting env values and ports definitions and at last adding firewall-rules
    ```
    
-   
+   # Snapshots
+   ![1587625802063](images2/1.png)
    
    ## Steps to do this deployment compatible with CI/CD 
     
